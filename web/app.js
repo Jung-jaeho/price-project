@@ -1,46 +1,39 @@
-// var express = require('express');
-// var http = require('http');
-// var path = require('path');
-// var static = require('serve-static');
-
-//var app = express();
-
+// [LOAD PACKAGES]
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var session = require('express-session');
-var fs = require("fs")
+var mysql = require('mysql');
 
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+
 app.engine('html', require('ejs').renderFile);
 
+app.use(express.static('public'));
 
-var server = app.listen(3000, function () {
-    console.log("Express server has started on port 3000")
+var connection = mysql.createConnection({
+    host: '203.250.148.108',
+    user: 'guest',
+    password: 'ssg@)!(',
+    port: 53306,
+    database: 'price'
 });
 
 
-// app.use(static(path.join(__dirname, '/')))
-// app.set('port', process.env.PORT || 8000);
+// [CONFIGURE APP TO USE bodyParser]
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 
-app.use(express.static('public'));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded());
+// [CONFIGURE SERVER PORT]
+var port = process.env.PORT || 3000;
 
-var router = require('./router/main')(app, fs);
+// [CONFIGURE ROUTER]
+var router = require('./routes/main')(app, connection)
 
-
-
-// app.get('/', function (req, res) {
-//     res.render('views/search.html');
-// })
-
-// app.get('/search', function (req, res) {
-//     res.render('search.html');
-// })
-
-// http.createServer(app).listen(app.get('port'), function () {
-//     console.log("Server Start..." + app.get('port'));
-// })
+// [RUN SERVER]
+var server = app.listen(port, function () {
+    console.log("Express server has started on port " + port)
+});

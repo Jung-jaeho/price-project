@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<!-- jQuery CDN  -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<head>
+</head>
+
+<body>
+    <div>
+        <h1>Test</h1>
+        <input type="text" id="input" />
+        <button type="submit" id="submit">검색</button>
+    </div>
+
+</body>
+
+<script>
+    $('#submit').click(function () {
+        var value = $("#input").val();
+        $(location).attr("href", "/search/" + value);
+    })
+</script>
+
+</html>
