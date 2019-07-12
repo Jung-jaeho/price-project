@@ -1,0 +1,164 @@
+  #content {
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(0, 0, 0, 0.7);
+  }
+
+  #content>#bg {
+      position: absolute;
+      top: -100px;
+      left: 0px;
+      width: auto;
+      height: auto;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1000;
+      overflow: hidden;
+  }
+
+  .content-box {
+      margin-top: 100px;
+  }
+
+  #logo {
+      width: 130px;
+  }
+
+  .btn-outline-light {
+      border-color: #341f97;
+      color: #341f97;
+  }
+
+  .btn-outline-light:hover {
+      border-color: #341f97;
+      background: #341f97;
+      color: #fff;
+  }
+
+  #content .search-button {
+      color: #fff;
+      border-color: #341f97;
+      background: #341f97;
+      width: 100%;
+      height: 100%;
+  }
+
+  #content .search-button:hover {
+      background: #1B1464;
+      border-color: #1B1464;
+  }
+
+  #content .search-input {
+      width: 100%;
+      height: 100%;
+  }
+
+  .tag-link {
+      color: #fff;
+      margin: 0 5px 0 5px;
+      font-size: 12px;
+  }
+
+  .tag-link:hover {
+      color: #f0f0f0;
+  }
+
+  .card-content .card-text {
+      margin-bottom: 10px;
+  }
+
+  .container .row .text {
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.8em;
+  }
+
+  #svg {
+      width: 100%;
+      height: 100%;
+  }
+
+  .line {
+      stroke-dashoffset: 0;
+      box-shadow: 10px 10px 1px black;
+  }
+
+  .breakpoint {
+      transform: scale(0);
+      position: absolute;
+      -webkit-transform-origin: 50% 50%;
+  }
+
+  .active {
+      transform: scale(1)
+  }
+
+  .icon {
+      font-size: 80px;
+  }
+
+  .icon-title {
+      font-size: 20px;
+      margin: 10px;
+  }
+
+  .icon-text {
+      font-size: 15px;
+      margin: 10px;
+  }
+
+  .box {
+      min-height: 500px;
+      padding-top: 100px;
+      background: #fff;
+  }
+
+  .box .title {
+      font-family: 'Nanum Gothic';
+      font-size: 50px;
+  }
+
+  .box .title-box {
+      text-align: center;
+  }
+
+  .box .title-box .title {
+      font-family: 'Nanum Gothic';
+      font-size: 50px;
+  }
+
+  .box .line-box {
+      margin: 40px 0 0 0;
+      width: 200px;
+      height: 2px;
+      background: #341f97;
+  }
+
+  footer {
+      width: 100%;
+      min-height: 450px;
+      background: #341f97;
+      color: #fff;
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+  }
+
+  footer .container {
+      text-align: center;
+  }
+
+  footer #footer-logo {
+      width: 250px;
+  }
+
+  footer .title {
+      font-family: 'Nanum Gothic';
+      font-size: 30px;
+      flex: 1;
+      justify-content: center;
+      line-height: 55px;
+  }

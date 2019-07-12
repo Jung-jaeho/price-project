@@ -40,7 +40,7 @@ module.exports = function (app, connection) {
 
         if (keyword != "") {
 
-            connection.query('SELECT * from articles WHERE title LIKE "%' + keyword + '%" AND content LIKE "%' + keyword + '%" LIMIT ' + startRowCount + ',' + endRowCount,
+            connection.query('SELECT * from articles WHERE title LIKE "%' + keyword + '%" OR content LIKE "%' + keyword + '%" LIMIT ' + startRowCount + ',' + endRowCount,
 
                 function (err, rows, fields) {
                     if (!err) {
