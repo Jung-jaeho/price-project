@@ -17,7 +17,13 @@ var connection = mysql.createConnection({
     user: 'guest',
     password: 'ssg@)!(',
     port: 53306,
-    database: 'price'
+    database: 'price',
+
+});
+
+
+connection.connect(function (err) {
+    if (err) throw err;
 });
 
 

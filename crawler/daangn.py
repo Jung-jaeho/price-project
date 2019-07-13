@@ -5,6 +5,7 @@ import time
 import datetime
 import argparse
 import sys
+import random
 
 dfeault_limit = 15
 
@@ -49,7 +50,7 @@ def daangn(api, headers, cookies, curs, args):
 
     while True:
         # 5초 딜레이
-        time.sleep(5)
+        time.sleep(random.randrange(3, 10))
         # default
         if count == 0 and args.lasts == "false":
             api = api
@@ -116,36 +117,79 @@ def daangn(api, headers, cookies, curs, args):
 
         """ 프로그램 종료 """
         if(len(json['articles']) < 15):
-
             print("# ======================= 컨텐츠 부족")
             sys.exit(1)
 
 
-def bunjang(api, headers, cookies, curs, args):
+def bunjang(headers, cookies, curs, args):
+
+    page = 0
 
     while True:
+        api = "https://core-api.bunjang.co.kr/api/1/find_v2.json?enable_redirect=1&f_location%5B%5D=37.555122%2C127.075837%2C10km&order=date&page=" + \
+            str(page)+"&req_ref=neighborhood&request_id=20190712202933&stat_device=i&stat_tc_required=1&stat_uid=9359949&token=7fd234a3fc8b44d394fb72d3cb93555b&version=4"
+        # api = "https://core-api.bunjang.co.kr/api/1/find_v2.json?f_flag=recommend3&f_location[]=37.545249,127.072822,100km&page=" + \
+        #     str(page)+"&req_ref=recommend&request_id=20190712135038"
+
+        # 5초 딜레이
+        time.sleep(5)
+
         res = requests.get(api, headers=headers, cookies=cookies)
 
         if(res.status_code == 200):
 
             json = res.json()
+            data = {}
 
             for i in range(len(json['list'])):
                 site_name = 'bunjang'
                 article_id = json['list'][i]['pid']
                 article_url = "https://m.bunjang.co.kr/products/"+article_id+"?ref=홈"
                 title = json['list'][i]['name']
-                content = requests.get('https://core-api.bunjang.co.kr/api/1/product/'+article_id +
-                                       '/detail_info.json', headers=headers, cookies=cookies).json()['item_info']['description']
+                try:
+                    content = requests.get('https://core-api.bunjang.co.kr/api/1/product/'+article_id +
+                                           '/detail_info.json', headers=headers, cookies=cookies).json()['item_info']['description']
+                except:
+                    content = ""
+
                 price = json['list'][i]['price']
-                image = json['list'][i]['product_image']
+
+                try:
+                    image = json['list'][i]['product_image']
+                except:
+                    image = "default.jpg"
+
                 published_at = time.strftime(
                     '%Y-%m-%d %H:%M:%S', time.localtime(int(json['list'][i]['update_time'])))
                 crawled_at = time.strftime('%Y-%m-%d %H:%M:%S')
+
+                data['site_name'] = site_name
+                data['article_id'] = article_id
+                data['article_url'] = article_url
+                data['title'] = title
+                data['content'] = content
+                data['price'] = price
+                data['image'] = image
+                data['published_at'] = published_at
+                data['crawled_at'] = crawled_at
+
+                """ 데이터베이스에 Insert """
+                insert(curs, data)
+
+            print("API: "+str(api))
+            print("PAGE: "+str(page))
+
+            page = page + 1
+
+            """ 프로그램 종료 """
+            if(len(json['list']) < 15):
+                print(len(json['list']))
+                print("# ======================= 컨텐츠 부족")
+                sys.exit(1)
+
         else:
-             print("# ======================= 컨텐츠 부족")
+            print("# ======================= 접속 문제")
             sys.exit(1)
-            
 
 
 if __name__ == "__main__":
@@ -157,10 +201,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     daangn_api = "https://www.daangn.com/api/v21/articles.json?filter=user_categories&include=first_image%2Cuser&limit=15&range=range3&region_id=6086"
-    bunjang_api = "https://core-api.bunjang.co.kr/api/1/find_v2.json?f_flag=recommend3&page=0&req_ref=recommend&request_id=20190712135038"
 
     conn = pymysql.connect(host='203.250.148.108', port=53306, user='guest', password='ssg@)!(',
                            db='price', charset='utf8mb4', )
+
+    # conn = pymysql.connect(host='127.0.0.1',  user='root',
+    #                        password='sejongssg!@#', db='price', charset='utf8mb4', )
+
     curs = conn.cursor()
 
     if args.mode == "daangn":
@@ -177,17 +224,16 @@ if __name__ == "__main__":
         daangn(daangn_api, daangn_headers, daangn_cookies, curs, args)
 
     if args.mode == "bunjang":
-
         # 번개 장터 함수 호출
         bunjang_headers = {
             'accept': '*/*',
             'user-agent': 'Quicket/4.9.2 (iPhone; iOS 11.3.1; Scale/2.00)',
             'accept-language': 'ko-KR;q=1, en-KR;q=0.9',
             'accept-encoding': 'br,gzip,deflate'}
+        bunjang_cookies = {
+            'bunny_cookie=': 'ioqxg7iysxzt3232sysn88qmjaggnmck', '_ga': 'GA1.3.1198344394.1562812994'}
 
-        bunjang_cookies = {'_ga': 'GA1.3.1198344394.1562812994'}
-
-        bunjang(bunjang_api, bunjang_headers, bunjang_cookies, curs, args)
+        bunjang(bunjang_headers, bunjang_cookies, curs, args)
 
     # DB connection 종료
     conn.close()

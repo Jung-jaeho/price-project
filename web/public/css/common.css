@@ -76,3 +76,7 @@ header .search-button:hover {
     position: fixed;
     border-bottom: 1px solid #ddd;
 }
+
+.padding-box {
+    padding: 50px;
+}
