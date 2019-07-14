@@ -113,3 +113,17 @@
     background: #f0f0f0;
 
 }
+
+#myChart {
+    height: 300px;
+    padding: 20px;
+}
+
+canvas {
+    height: 300px !important;
+}
+
+.spinner {
+    display: none;
+    color: #341f97;
+}

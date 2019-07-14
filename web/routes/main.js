@@ -27,6 +27,16 @@ module.exports = function (app, connection) {
 
     });
 
+    //개인정보 페이지
+    app.get('/privacy/', function (req, res) {
+
+        res.render('privacy', {
+            title: "Price:: 가장 빠른 중고시세 확인",
+            keyword: req.params.keyword
+        })
+
+    });
+
     function chartQuery(query, datas) {
 
         var chartDatas = []
@@ -69,17 +79,17 @@ module.exports = function (app, connection) {
             connection.query(query, function (err, rows, fields) {
                 if (!err) {
                     if (rows.length > 0) {
-                        if(rows[0].site_name=="daangn"){
+                        if (rows[0].site_name == "daangn") {
                             datas['dCount'] = rows[0].siteCount;
                             datas['vCount'] = 0;
-                        }else if(rows[0].site_name == "bunjang" && !rows[1]){
+                        } else if (rows[0].site_name == "bunjang" && !rows[1]) {
                             datas['vCount'] = rows[0].siteCount;
                             datas['dCount'] = 0;
-                        }else{
+                        } else {
                             datas['vCount'] = rows[0].siteCount;
-                            datas['dCount'] = rows[1].siteCount;    
+                            datas['dCount'] = rows[1].siteCount;
                         }
-                    }else {
+                    } else {
                         datas['vCount'] = 0;
                         datas['dCount'] = 0;
                     }

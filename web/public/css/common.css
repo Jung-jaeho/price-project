@@ -60,6 +60,11 @@ header .search-button:hover {
     background: #341f97;
 }
 
+#logo {
+    width: 130px;
+}
+
+
 .default-header,
 .fixed-header {
     width: 100%;

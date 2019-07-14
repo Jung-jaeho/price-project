@@ -12,6 +12,8 @@ var scrollBreak = false;
 function sendRequest(page, keyword, removeKeywords, order) {
     data = "";
 
+    $('.spinner').show();
+
     if (scrollBreak == false) {
         scrollBreak = true;
         //비동기 Request 
@@ -29,21 +31,32 @@ function sendRequest(page, keyword, removeKeywords, order) {
                 if (data.state == "success" && Number(data.productCount) > 0) {
                     //성공하면 DOM 그리기 
                     drawView(data);
+
                 } else {
                     //실패하면 DOM 그리기 
                     failDrawView(keyword);
                 }
 
-                scrollBreak = false;
+                $('.spinner').hide();
+
+                if (data['articles'].length == 15) {
+
+                    scrollBreak = false;
+                } else {
+                    scrollBreak = true;
+                }
             }
         })
     }
 }
 
 //카드 그리기
-function cardDraw(data, count) {
+function cardDraw(data, count, vCount, dCount) {
 
     $('#productCount').text(count);
+
+    $('#vCount').text(vCount + "개");
+    $('#dCount').text(dCount + "개");
 
     for (i = 0; i < data.length; i++) {
 
@@ -61,7 +74,7 @@ function cardDraw(data, count) {
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-sm btn-outline-secondary">${data[i].price} 원</button>
-                                <img src="/images/${data[i].site}.png" style="width:30px;height:30px;">
+                                <img src="/images/${data[i].site}.png" style="width:25px; height:25px; object-fit: contain; margin-left:20px; ">
                             </div>
                             <small class="text-muted">${data[i].publish.slice(0, 10)}</small>
                         </div>
@@ -77,6 +90,9 @@ function chartDraw(data) {
     var y = [];
 
     var ctx = document.getElementById('myChart').getContext('2d');
+    ctx.height = 300;
+    ctx.width = "100%";
+
 
     for (i = 0; i < data.length; i++) {
         x.push(data[i].price);
@@ -96,7 +112,7 @@ function chartDraw(data) {
                 pointBorderWidth: 1,
                 pointBorderColor: 'rgba(52,31,151,1)',
                 pointBackgroundColor: 'rgba(52,31,151,1)',
-                fill : false
+                fill: false
             }]
         },
         options: {
@@ -142,7 +158,8 @@ function drawView(data) {
     //차트 그리기
     chartDraw(data['chartDatas']);
     //카드 그리기
-    cardDraw(data['articles'], data['productCount']);
+    cardDraw(data['articles'], data['productCount'], data['vCount'], data['dCount']);
+
 }
 
 //DOM 그리기 ( 실패 )
@@ -153,7 +170,9 @@ function failDrawView(keyword) {
 
 
 function linkDetail(url) {
-    $(location).attr("href", url);
+
+    window.open(url, "_blank");
+
 }
 
 function redirect() {
@@ -163,11 +182,14 @@ function redirect() {
 
 function reset() {
     page = 0;
+    scrollBreak = false;
 
     sendRequest(++page, keyword, removeKeywordsSplit(), order);
 
     $("#content-list").html('');
     $("#chartContainer").html('');
+
+
     $("#chartContainer").append('<canvas id="myChart" style="width:100%; height:300px;"></canvas>');
 
 }
@@ -283,256 +305,3 @@ $(window).scroll(function () {
         }
     }
 });
-
-
-
-
-
-// // chart.js
-// function makeChart() {
-//     var ctx = document.getElementById('myChart').getContext('2d');
-
-//     var x = json.map(function (e) {
-//         return e.x;
-//     });
-
-//     var y = json.map(function (e) {
-//         return e.y;
-//     });
-
-
-//     console.log(x);
-//     console.log(y);
-
-//     var lineChart = new Chart(ctx, {
-//         type: 'line',
-//         data: {
-//             labels: x,
-//             datasets: [{
-//                 label: "개수",
-//                 data: y,
-//                 backgroundColor: 'rgba(52,31,151,1)',
-//                 color: 'rgba(52,31,151,1)',
-//                 borderColor: 'rgba(52,31,151,1)',
-//                 pointBorderWidth: 2,
-//                 pointBorderColor: 'rgba(0,0,0,1)',
-//                 pointBackgroundColor: 'rgba(255,255,255,1)',
-//                 //fill : false
-//             }]
-//         },
-
-//         options: {
-//             legend: {
-//                 display: false
-//             },
-//             responsive: true,
-//             title: {
-//                 display: false,
-//                 text: '중고가 거래 시세'
-//             },
-//             tooltips: {
-//                 mode: 'index',
-//                 intersect: false,
-//             },
-//             hover: {
-//                 mode: 'nearest',
-//                 intersect: true
-//             },
-//             scales: {
-//                 xAxes: [{
-//                     display: true,
-//                     scaleLabel: {
-//                         display: false,
-//                         labelString: '가격'
-//                     }
-//                 }],
-//                 yAxes: [{
-//                     display: true,
-//                     scaleLabel: {
-//                         display: false,
-//                         labelString: '개수'
-//                     }
-//                 }]
-//             }
-//         }
-//     });
-// }
-
-
-
-
-// function sendAjax() {
-
-//     removeKeywords = ""
-
-//     if ($("#tags-input").val().length > 0) {
-//         removeKeywords = $("#tags-input").val().join();
-//     }
-
-//     $.ajax({
-//         url: '/api/v1/search/',
-//         type: 'post',
-//         dataType: 'json',
-//         async: false,
-//         data: {
-//             keyword: $("#search-input").val(),
-//             removeKeyword: removeKeywords,
-//             orderby: order
-//         },
-//         success: function (data) {
-//             if (data.state == "success") {
-//                 for (i = 0; i < data['articles'].length; i++) {
-//                     articles.push({
-//                         date: data['articles'][i].publish.slice(0, 10),
-//                         aURL: data['articles'][i].aURL,
-//                         image: data['articles'][i].image,
-//                         title: data['articles'][i].title,
-//                         content: data['articles'][i].content,
-//                         price: data['articles'][i].price,
-//                         site: data['articles'][i].site,
-//                     });
-//                 }
-//                 ProductCount = data['productCount']; //text-result 개수 출력
-//                 dCount = data['dCount'];
-//                 vCount = data['vCount'];
-
-//                 console.log(data['chartDatas']);
-
-//                 for (i = 0; i < data['chartDatas'].length; i++) {
-//                     json.push({
-//                         "x": `${data['chartDatas'][i].price}`,
-//                         "y": `${data['chartDatas'][i].PDcount}`
-//                     });
-//                 }
-//                 json.sort(function (a, b) {
-//                     return parseFloat(a.x) - parseFloat(b.x)
-//                 });
-
-//             } else {
-//                 $('#test-content').text("error");
-//             }
-//         }
-//     });
-
-// }
-
-
-
-
-// makeChart();
-
-// function reset() {
-//     json = [];
-//     articles = [];
-//     sendAjax();
-//     $("#content-list").html('');
-//     $("#chartContainer").html('');
-//     $("#chartContainer").append('<canvas id="myChart" style="width:100%; height:300px;"></canvas>');
-
-
-//     makeChart();
-//     page = 0;
-//     dataLoad(page);
-//     loadText();
-// }
-
-// $('#remove-button').click(function () {
-//     json = [];
-//     articles = [];
-//     sendAjax();
-//     $("#content-list").html('');
-//     $("#chartContainer").html('');
-//     $("#chartContainer").append('<canvas id="myChart" style="width:100%; height:300px;"></canvas>');
-
-
-//     makeChart();
-//     page = 0;
-//     dataLoad(page);
-//     loadText();
-
-// });
-
-// function orderby() {
-//     var selectP = $("#orderPrice").val();
-//     var selectD = $("#orderDate").val();
-
-
-//     if (selectP == 1 && selectD == 3) { // 가격 오름 날짜 오름
-//         order = "pudu";
-//     } else if (selectP == 1 && selectD == 4) { // 가격 오름 날짜 내림
-//         order = "pudd";
-//     } else if (selectP == 2 && selectD == 3) { // 가격 내림 날짜 오름
-//         order = "pddu";
-//     } else if (selectP == 2 && selectD == 4) { // 가격 내림 날짜 내림
-//         order = "pddd";
-//     } else if (selectP == 1) { //가격 오름차순
-//         order = "pu";
-//     } else if (selectP == 2) { //가격 내림차순
-//         order = "pd";
-//     } else if (selectD == 3) { //날짜 오름차순
-//         order = "du";
-//     } else if (selectD == 4) { //날짜 내림차순
-//         order = "dd";
-//     } else if (selectP == -1 && selectD == -1) {
-//         order = "";
-//     }
-//     console.log(order);
-//     json = [];
-//     articles = [];
-//     sendAjax();
-//     $("#content-list").html('');
-//     page = 0;
-//     dataLoad(page);
-
-// }
-
-//DataLoad 함수형 선언
-
-// var dataLoad = function (page) {
-//     for (let i = page * 9; i < page * 9 + 9; i++) {
-//         if (articles.length > i) {
-//             $('#content-list').append(`
-//             <div class="col-md-4" onclick="linkDetail('${articles[i].aURL}')">
-
-//             <div class="card-box">
-//                 <div class="card mb-4 shadow-sm">
-//                 <img src="${articles[i].image}" onerror="this.src='/images/not-found.png'" style="height:300px;">
-//                 <div class="card-body">
-//                     <p class="card-text" style="height:65px"><b>${articles[i].title}</b></p>
-//                     <p class="card-text" style="overflow: hidden; text-overflow:ellipsis; height:170px">${articles[i].content}</p>
-//                     <div class="d-flex justify-content-between align-items-center">
-//                         <div class="btn-group">
-//                             <button type="button" class="btn btn-sm btn-outline-secondary">${articles[i].price} 원</button>
-//                             <img src="/images/${articles[i].site}.png" style="width:30px;height:30px;">
-//                         </div>
-//                     <small class="text-muted">${articles[i].date}</small>
-//                     </div>
-//                 </div>
-
-//                 </div>
-//                 </div>`);
-//         } else {
-//             break;
-//         }
-
-//     }
-// }
-
-// $(document).ready(function () {
-//     var page = 0;
-
-//     dataLoad(page);
-//     $(window).scroll(function () {
-//         if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-//             dataLoad(++page);
-//         }
-//     });
-// });
-
-
-// function loadText() {
-//     document.getElementById('ProductCount').innerHTML = ProductCount;
-//     // document.getElementById('dCount').innerHTML = dCount;
-//     // document.getElementById('vCount').innerHTML = vCount;
-// }
-// loadText();
