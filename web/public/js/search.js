@@ -93,10 +93,10 @@ function chartDraw(data) {
                 backgroundColor: 'rgba(52,31,151,1)',
                 color: 'rgba(52,31,151,1)',
                 borderColor: 'rgba(52,31,151,1)',
-                pointBorderWidth: 2,
-                pointBorderColor: 'rgba(0,0,0,1)',
-                pointBackgroundColor: 'rgba(255,255,255,1)',
-                //fill : false
+                pointBorderWidth: 1,
+                pointBorderColor: 'rgba(52,31,151,1)',
+                pointBackgroundColor: 'rgba(52,31,151,1)',
+                fill : false
             }]
         },
         options: {

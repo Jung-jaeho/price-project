@@ -68,18 +68,21 @@ module.exports = function (app, connection) {
 
             connection.query(query, function (err, rows, fields) {
                 if (!err) {
-
                     if (rows.length > 0) {
-
-                        datas['vCount'] = rows[0].siteCount;
-                        datas['dCount'] = rows[1].siteCount;
-
-
-                    } else {
+                        if(rows[0].site_name=="daangn"){
+                            datas['dCount'] = rows[0].siteCount;
+                            datas['vCount'] = 0;
+                        }else if(rows[0].site_name == "bunjang" && !rows[1]){
+                            datas['vCount'] = rows[0].siteCount;
+                            datas['dCount'] = 0;
+                        }else{
+                            datas['vCount'] = rows[0].siteCount;
+                            datas['dCount'] = rows[1].siteCount;    
+                        }
+                    }else {
                         datas['vCount'] = 0;
                         datas['dCount'] = 0;
                     }
-
                     resolve(datas);
                 } else {
                     reject(new Error("Request is failed"));
@@ -126,7 +129,7 @@ module.exports = function (app, connection) {
     app.post('/api/v1/search', function (req, res) {
 
         //url decode and trim 
-        var keyword = decodeURI(req.body.keyword).replace(" ", "");;
+        var keyword = decodeURI(req.body.keyword).replace(" ", "");
 
         var removeKeywords = req.body.removeKeywords;
 
@@ -155,7 +158,7 @@ module.exports = function (app, connection) {
                 removeSplit = removeKeywords.split(',');
 
                 for (var value of removeSplit) {
-                    var removeWord = value.trim();
+                    var removeWord = value.replace(" ", "");
 
                     addQueryTitle += ` AND NOT (replace(title, " ", "") LIKE "%${removeWord}%")`;
                     addQueryContent += ` AND NOT (replace(content," ","") LIKE '%${removeWord}%')`;
@@ -186,7 +189,7 @@ module.exports = function (app, connection) {
             } else if (order == "dd") { //날짜 내림차순
                 addQueryOrder = "ORDER BY PUBLISHED_AT DESC"
             } else if (order == "") {
-                addQueryOrder = "";
+                addQueryOrder = "ORDER BY RAND()";
             }
 
             // 첫 번째 쿼리(카운트 확인)
