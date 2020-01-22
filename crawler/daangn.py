@@ -235,5 +235,5 @@ if __name__ == "__main__":
 
         bunjang(bunjang_headers, bunjang_cookies, curs, args)
 
-    # DB connection 종료
+    # -DB connection 종료-
     conn.close()
