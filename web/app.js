@@ -13,10 +13,10 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'));
 
 var connection = mysql.createConnection({
-    host: '203.250.148.108',
-    user: 'guest',
-    password: 'ssg@)!(',
-    port: 53306,
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    port: 3306,
     database: 'price',
 
 });
